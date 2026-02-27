@@ -4,7 +4,6 @@
 // ВСІ зображення замінені на 100% тематику КЛІНІНГУ: професійне прибирання квартир, офісів, після ремонту, чисті кухні, вітальні, ванни, пилососи, ганчірки, мочалки, швабри, еко-засоби
 // Максимальний SEO 2026 + дуже гарне повідомлення після замовлення
 // Автор: Ruslan Bilohash | bilohash.com | github.com/Ruslan-Bilohash
-// Копіюй ЦІЛКОМ і завантажуй разом із submit.php
 
 $success = isset($_GET['success']) && $_GET['success'] == 1;
 $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Klaida siunčiant užklausą. Bandykite dar kartą arba parašykite mums per messenger." : "";
