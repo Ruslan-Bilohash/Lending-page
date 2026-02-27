@@ -1,0 +1,8 @@
+# Включаємо обробку помилок
+ErrorDocument 404 /404.php
+
+# Якщо хочеш, щоб всі 404 йшли саме на цей файл
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ 404.php [L]
