@@ -99,3 +99,17 @@
 **Автор:** Ruslan Bilohash  
 **GitHub:** [github.com/Ruslan-Bilohash](https://github.com/Ruslan-Bilohash)  
 **Сайт:** [bilohash.com](https://bilohash.com)
+
+---
+## ❤️ СПОНСОРСТВО — Підтримати автора
+
+Якщо шаблон допоміг тобі — можеш підтримати автора:
+
+- **Buy Me a Coffee** → [buymeacoffee.com/bilohash](https://buymeacoffee.com/bilohash)
+- **Wise** → [wise.com/pay/me/ruslanb933](https://wise.com/pay/me/ruslanb933)
+- **PayPal** → [paypal.com/donate](https://www.paypal.com/donate/?hosted_button_id=GSS6YYMXZ3J4N)
+- **Vipps** → +47 462 55 885
+
+Окрема сторінка: `/donate.php`
+
+Кожна підтримка — це мотивація робити ще кращі шаблони ❤️
