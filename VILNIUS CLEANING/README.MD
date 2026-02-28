@@ -85,3 +85,23 @@
 ---
 
 ### 📁 Повна структура файлів (v2.0)
+
+---
+
+**Автор:** [Ruslan Bilohash](https://bilohash.com)  
+**GitHub:** [github.com/Ruslan-Bilohash](https://github.com/Ruslan-Bilohash)
+
+❤️ **СПОНСОРСТВО — Підтримати автора**  
+Якщо шаблон допоміг тобі — можеш підтримати:
+
+- [☕ Buy Me a Coffee](https://buymeacoffee.com/bilohash)
+- [💸 Wise](https://wise.com/pay/me/ruslanb933)
+- [💳 PayPal](https://www.paypal.com/donate/?hosted_button_id=GSS6YYMXZ3J4N)
+- [🇳🇴 Vipps](https://vipps.no) → +47 462 55 885
+
+**Окрема сторінка підтримки:** [/donate.php](https://meistru.lt/donate.php)
+
+Кожна підтримка — це мотивація робити ще кращі шаблони ❤️
+
+**Готовий до комерційного використання прямо зараз!**  
+Відкрий **[meistru.lt](https://meistru.lt/)** і починай отримувати замовлення на прибирання сьогодні.
