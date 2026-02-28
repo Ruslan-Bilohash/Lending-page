@@ -43,6 +43,17 @@
 - **Automatisk 404-håndtering** via `.htaccess`
 
 ---
+### 📸 Skjermbilder
+
+**Hovedsiden (engelsk versjon):**
+
+![Hovedsiden — Vilnius Cleaning 2026](screenshots/screen.jpg)
+
+**Bestillingsskjema + mobilversjon:**
+
+![Bestillingsskjema — Vilnius Cleaning](screenshots/screen2.jpg)
+
+---
 ### 📱 Design og UX (Tailwind CSS + jevne animasjoner)
 - Hero-seksjon fullskjerm
 - «Før og Etter» galleri
