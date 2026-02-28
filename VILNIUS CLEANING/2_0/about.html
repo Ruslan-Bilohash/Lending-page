@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vilnius Cleaning 2026 — Повна документація проекту</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .hero { background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://picsum.photos/seed/professional-cleaning-vilnius-hero-2026/2000/1200') center/cover no-repeat; }
+        .tab-active { border-bottom: 5px solid #10b981; color: #10b981; font-weight: 700; }
+        .lang-content { display: none; }
+        .lang-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- HERO -->
+    <section class="hero h-screen flex items-center text-white">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <i class="fa-solid fa-broom text-8xl mb-8 text-emerald-400"></i>
+            <h1 class="text-6xl md:text-7xl font-bold tracking-tighter mb-4">Vilnius Cleaning 2026</h1>
+            <p class="text-3xl md:text-4xl font-light">Повна документація • Всі 5 мов • Детальний опис скрипту</p>
+        </div>
+    </section>
+
+    <!-- LANGUAGE TABS -->
+    <div class="sticky top-0 bg-white shadow z-50 border-b">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex overflow-x-auto gap-8 py-6" id="tabs">
+                <button onclick="switchTab(0)" class="tab-active px-8 py-3 text-lg" id="tab0">🇱🇹 Lietuvių</button>
+                <button onclick="switchTab(1)" class="px-8 py-3 text-lg" id="tab1">🇬🇧 English</button>
+                <button onclick="switchTab(2)" class="px-8 py-3 text-lg" id="tab2">🇺🇦 Українська</button>
+                <button onclick="switchTab(3)" class="px-8 py-3 text-lg" id="tab3">🇷🇺 Русский</button>
+                <button onclick="switchTab(4)" class="px-8 py-3 text-lg" id="tab4">🇳🇴 Norsk</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-6 py-16">
+
+        <!-- ==================== ЛИТОВСЬКА ==================== -->
+        <div id="content0" class="lang-content active">
+            <h2 class="text-5xl font-bold mb-10">Projektas „Vilnius Cleaning 2026“ — Pilna dokumentacija</h2>
+            <p class="text-xl leading-relaxed">Pilnai paruoštas premium lygio daugiakalbis valymo landing page Vilniui. 5 kalbos, 100% valymo tematika, maksimalus SEO 2026, graži užsakymo forma su HTML laišku ir moderni 404 puslapis.</p>
+        </div>
+
+        <!-- ==================== АНГЛІЙСЬКА ==================== -->
+        <div id="content1" class="lang-content">
+            <h2 class="text-5xl font-bold mb-10">Vilnius Cleaning 2026 — Full Project Documentation</h2>
+            <p class="text-xl leading-relaxed">Fully completed premium multi-language cleaning landing page for Vilnius, Lithuania. 5 languages, 100% cleaning theme, maximum SEO 2026, beautiful order form with HTML email, modern 404 page and clean code.</p>
+        </div>
+
+        <!-- ==================== УКРАЇНСЬКА (НАЙПОВНІША) ==================== -->
+        <div id="content2" class="lang-content">
+            <h2 class="text-5xl font-bold mb-10">Повна інформація про проект «Vilnius Cleaning 2026»</h2>
+            
+            <h3 class="text-3xl font-semibold mt-12 mb-6">1. Загальний опис</h3>
+            <p class="text-lg leading-relaxed">Це сучасний, швидкий та максимально SEO-оптимізований преміум-лендінг для компанії професійного прибирання у Вільнюсі (Литва). Проект створений у 2026 році з урахуванням усіх сучасних вимог пошукових систем та клієнтів.</p>
+
+            <h3 class="text-3xl font-semibold mt-12 mb-6">2. Технічні характеристики</h3>
+            <ul class="grid md:grid-cols-2 gap-4 text-lg">
+                <li>5 повноцінних мовних версій</li>
+                <li>100% тематика клінінгу (тільки професійні фото)</li>
+                <li>Максимальне SEO 2026 (OG, Twitter Cards, Schema.org)</li>
+                <li>Красива форма замовлення + стильний HTML-лист</li>
+                <li>Сучасна сторінка 404 з автопереадресацією</li>
+                <li>Повністю адаптивний дизайн (Tailwind CSS)</li>
+                <li>MIT License з комерційним дозволом</li>
+            </ul>
+
+            <h3 class="text-3xl font-semibold mt-12 mb-6">3. Структура файлів</h3>
+            <div class="bg-gray-900 text-white p-8 rounded-3xl font-mono text-sm">
+                index.php  — Литовська (головна)<br>
+                en.php   — Англійська<br>
+                ua.php   — Українська<br>
+                ru.php   — Російська<br>
+                no.php   — Норвезька<br>
+                submit.php — Обробник форми + HTML-лист<br>
+                404.php   — Стильна сторінка помилки<br>
+                .htaccess  — Автоматична обробка 404<br>
+                LICENSE   — MIT License
+            </div>
+
+            <h3 class="text-3xl font-semibold mt-12 mb-6">4. Ліцензія та умови використання</h3>
+            <div class="bg-emerald-50 border border-emerald-300 p-8 rounded-3xl">
+                <p class="font-bold text-emerald-700">Дозволено:</p>
+                <ul class="list-disc pl-8 mt-4 space-y-2">
+                    <li>Повністю змінювати код під себе</li>
+                    <li>Використовувати в комерційних цілях</li>
+                    <li>Продавати клієнтам, розміщувати на будь-яких доменах</li>
+                </ul>
+                <p class="mt-8 font-bold text-red-600">Обов’язкова умова:</p>
+                <p class="italic">У футері сайту має залишатися видимою згадка автора:<br>
+                <strong>«Зроблено з ❤️ Ruslan Bilohash — bilohash.com»</strong></p>
+            </div>
+        </div>
+
+        <!-- ==================== РОСІЙСЬКА ==================== -->
+        <div id="content3" class="lang-content">
+            <h2 class="text-5xl font-bold mb-10">Полная информация о проекте «Клининг Вильнюс 2026»</h2>
+            <p class="text-lg leading-relaxed">Полностью готовый премиум лендинг для компании профессиональной уборки в Вильнюсе. 5 языков, 100% тематика клининга, максимальное SEO 2026, красивая форма заявки с HTML-письмом и современная страница 404.</p>
+        </div>
+
+        <!-- ==================== НОРВЕЗЬКА ==================== -->
+        <div id="content4" class="lang-content">
+            <h2 class="text-5xl font-bold mb-10">Full prosjektdokumentasjon — Vilnius Cleaning 2026</h2>
+            <p class="text-lg leading-relaxed">Fullstendig ferdig premium flerspråklig landingsside for profesjonell rengjøring i Vilnius. 5 språk, 100% rengjøringstema, maksimal SEO 2026, pen bestillingsskjema med HTML-e-post og moderne 404-side.</p>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(n) {
+            document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('content' + n).classList.add('active');
+
+            document.querySelectorAll('#tabs button').forEach(btn => btn.classList.remove('tab-active'));
+            document.getElementById('tab' + n).classList.add('tab-active');
+        }
+        // За замовчуванням відкриваємо українську
+        window.onload = () => switchTab(2);
+    </script>
+
+</body>
+</html>

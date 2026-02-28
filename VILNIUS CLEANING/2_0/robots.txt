@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Allow: /index.php
+Allow: /lt.php
+Allow: /ru.php
+Allow: /ua.php
+Allow: /no.php
+Allow: /en.php
+Allow: /kalkuliatorius.php
+
+Disallow: /submit.php
+Disallow: /traffic_logger.php
+Disallow: /admin/
+Disallow: /private/
+Disallow: /cgi-bin/
+Disallow: *.log
+Disallow: *.txt$
+
+# Sitemap
+Sitemap: https://meistru.lt/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

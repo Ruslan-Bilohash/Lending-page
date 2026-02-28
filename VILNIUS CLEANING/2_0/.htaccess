@@ -1,0 +1,17 @@
+# ====================== .htaccess ======================
+# Правильна конфігурація для Meistru.lt (лютий 2026)
+
+# Вимикаємо строгий 404 для запитів з параметрами
+ErrorDocument 404 /404.php
+
+RewriteEngine On
+
+# НЕ перехоплюємо запити з параметрами (?lang=xx, ?success=1 і т.д.)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{QUERY_STRING} !^lang=
+RewriteCond %{QUERY_STRING} !^success=
+RewriteRule ^(.*)$ 404.php [L]
+
+# Захист папок
+Options -Indexes
