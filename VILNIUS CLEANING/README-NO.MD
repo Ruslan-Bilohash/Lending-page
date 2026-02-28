@@ -47,11 +47,11 @@
 
 **Hovedsiden (engelsk versjon):**
 
-![Hovedsiden — Vilnius Cleaning 2026](screenshots/screen.jpg)
+![Hovedsiden — Vilnius Cleaning 2026](screen.jpg)
 
 **Bestillingsskjema + mobilversjon:**
 
-![Bestillingsskjema — Vilnius Cleaning](screenshots/screen2.jpg)
+![Bestillingsskjema — Vilnius Cleaning](screen2.jpg)
 
 ---
 ### 📱 Design og UX (Tailwind CSS + jevne animasjoner)
