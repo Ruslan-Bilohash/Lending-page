@@ -8,6 +8,16 @@
 **💰 Støtt forfatteren:** [donate.php](https://meistru.lt/donate.php)
 
 ---
+### 📸 Skjermbilder
+
+**Hovedsiden (engelsk versjon):**
+
+![Hovedsiden — Vilnius Cleaning 2026](screen.jpg)
+
+**Bestillingsskjema + mobilversjon:**
+
+![Bestillingsskjema — Vilnius Cleaning](screen2.jpg)
+---
 ### ✨ Hovedfordeler med prosjektet (v2.0 — oppdatert 28. februar 2026)
 
 - **5 fullverdige språkversjoner** (alle filer er separate, fullt oversatt og optimalisert):
@@ -41,17 +51,6 @@
 - **Moderne HTML-e-post** til postkasse (gradient, datatabell, knapper, logo) — sendes til 3 adresser
 - **Stilig 404-side** med autotimer for omdirigering
 - **Automatisk 404-håndtering** via `.htaccess`
-
----
-### 📸 Skjermbilder
-
-**Hovedsiden (engelsk versjon):**
-
-![Hovedsiden — Vilnius Cleaning 2026](screen.jpg)
-
-**Bestillingsskjema + mobilversjon:**
-
-![Bestillingsskjema — Vilnius Cleaning](screen2.jpg)
 
 ---
 ### 📱 Design og UX (Tailwind CSS + jevne animasjoner)
