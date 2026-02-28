@@ -12,11 +12,11 @@
 
 **Main page (English version):**
 
-![Main page — Vilnius Cleaning 2026](screenshots/screen.jpg)
+![Main page — Vilnius Cleaning 2026](screen.jpg)
 
 **Order form + mobile version:**
 
-![Order form — Vilnius Cleaning](screenshots/screen2.jpg)
+![Order form — Vilnius Cleaning](screen2.jpg)
 
 ---
 ### ✨ Key Features of the Project (v2.0 — updated February 28, 2026)
