@@ -1,6 +1,6 @@
 # MediBook Clinic – Сучасна лендінг-сторінка для запису до лікаря 2026
 
-![MediBook Clinic Hero](https://picsum.photos/seed/modern-private-clinic-2026/1200/630)
+![MediBook Clinic Hero](https://bilohash.com/themeforest/MediBookClinic/screen.jpg)
 
 **Професійна, швидка та красива лендінг-сторінка** для приватної медичної клініки з системою онлайн-запису.
 
@@ -13,8 +13,9 @@
 - SEO-оптимізацією + Schema.org розміткою
 - Готово до завантаження на ThemeForest
 
-**Жива демо**: [https://bilohash.com](https://bilohash.com/themeforest/MediBookClinic) *(замініть на свій домен)*
-
+**Жива демо**: [https://bilohash.com/themeforest/MediBookClinic](https://bilohash.com/themeforest/MediBookClinic) *(замініть на свій домен)*
+[https://bilohash.com/themeforest/MediBookClinic](https://bilohash.com/themeforest/MediBookClinic/admin.php) 
+Пароль: admin123
 ---
 
 ### ✨ Основні можливості
