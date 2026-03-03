@@ -1,0 +1,345 @@
+{
+    "general": {
+        "phone": "+1 234 567 8900",
+        "email": "info@medibookclinic.com",
+        "address": "Main Street 1, New York",
+        "site_name": "MediBook Clinic",
+        "year": "2026"
+    },
+    "meta": {
+        "title": "Book Doctor Appointment Online | MediBook Clinic New York 2026",
+        "description": "Instant online doctor booking ✓ MediBook Clinic — top specialists in New York. Same-day appointments, online consultations, modern lab. Book in 60 seconds!",
+        "keywords": "book doctor appointment New York, online doctor booking, private clinic NY, family doctor New York, cardiologist New York",
+        "robots": "index, follow, max-image-preview:large",
+        "author": "Ruslan Bilohash",
+        "theme_color": "#14b8a6",
+        "canonical": "https://medibookclinic.com"
+    },
+    "og": {
+        "title": "Book Doctor Appointment Online | MediBook Clinic New York",
+        "description": "Fast online booking to the best doctors in New York. Same-day appointments, video consultations, modern laboratory. MediBook Clinic — your health 24/7.",
+        "image": "https://picsum.photos/seed/modern-private-clinic-2026/1200/630",
+        "image_width": "1200",
+        "image_height": "630",
+        "url": "https://medibookclinic.com",
+        "type": "website",
+        "locale": "en_US",
+        "site_name": "MediBook Clinic"
+    },
+    "twitter": {
+        "card": "summary_large_image",
+        "title": "Book Doctor Appointment Online | MediBook Clinic New York",
+        "description": "Online booking in 60 seconds ✓ Same-day appointments ✓ Top doctors in New York ✓ MediBook Clinic",
+        "image": "https://picsum.photos/seed/modern-private-clinic-2026/1200/630"
+    },
+    "header": {
+        "logo_text": "MediBook Clinic",
+        "nav_items": [
+            {
+                "text": "Our Services",
+                "anchor": "#services"
+            },
+            {
+                "text": "Why Us",
+                "anchor": "#benefits"
+            },
+            {
+                "text": "How It Works",
+                "anchor": "#process"
+            },
+            {
+                "text": "Our Doctors",
+                "anchor": "#doctors"
+            },
+            {
+                "text": "Gallery",
+                "anchor": "#gallery"
+            },
+            {
+                "text": "Reviews",
+                "anchor": "#reviews"
+            },
+            {
+                "text": "FAQ",
+                "anchor": "#faq"
+            },
+            {
+                "text": "Book Now",
+                "anchor": "#apply"
+            }
+        ]
+    },
+    "hero": {
+        "h1": "BOOK A DOCTOR APPOINTMENT IN 60 SECONDS",
+        "p": "MediBook Clinic — modern private clinic in New York. Instant online booking to any specialist, same-day appointments, video consultations and advanced laboratory. Your health 24/7.",
+        "button_order": "Book Online Now",
+        "button_phone": "+1 234 567 8900",
+        "bottom_text": "New York • Same-Day Appointments • Online Consultations • 24/7 Support"
+    },
+    "services": {
+        "badge": "OUR SERVICES",
+        "h2": "Our Specialists & Services",
+        "p": "Book appointments with the best doctors in New York. All specialties in one clinic.",
+        "items": [
+            {
+                "image": "https://picsum.photos/seed/family-doctor-2026/600/400",
+                "title": "Family Doctor",
+                "text": "Prevention, treatment and care for the whole family.",
+                "footer": "Same-day appointment"
+            },
+            {
+                "image": "https://picsum.photos/seed/cardiologist-2026/600/400",
+                "title": "Cardiologist",
+                "text": "ECG, heart ultrasound, hypertension & arrhythmia treatment.",
+                "footer": "Online consultation"
+            },
+            {
+                "image": "https://picsum.photos/seed/pediatrician-2026/600/400",
+                "title": "Pediatrician",
+                "text": "Children’s doctor from birth to 18 years.",
+                "footer": "Vaccination"
+            },
+            {
+                "image": "https://picsum.photos/seed/laboratory-2026/600/400",
+                "title": "Laboratory",
+                "text": "All tests in 1 day with results delivered.",
+                "footer": "No queues"
+            }
+        ]
+    },
+    "advantages": {
+        "badge": "WHY CHOOSE US",
+        "h2": "Why Patients Choose MediBook Clinic",
+        "p": "Modern equipment, experienced doctors and convenient online booking without queues.",
+        "items": [
+            {
+                "emoji": "⚡",
+                "title": "Book in 60 Seconds",
+                "text": "Online or by phone — no waiting."
+            },
+            {
+                "emoji": "🩺",
+                "title": "Experienced Doctors",
+                "text": "Specialists with 10+ years of practice."
+            },
+            {
+                "emoji": "🔒",
+                "title": "Full Confidentiality",
+                "text": "Data protection according to GDPR."
+            },
+            {
+                "emoji": "📱",
+                "title": "Online Consultations",
+                "text": "Video call from anywhere in the world."
+            },
+            {
+                "emoji": "🏥",
+                "title": "Modern Equipment",
+                "text": "Latest ultrasound, X-ray and lab."
+            },
+            {
+                "emoji": "🌍",
+                "title": "All New York Districts",
+                "text": "Convenient central location."
+            }
+        ]
+    },
+    "how": {
+        "badge": "HOW IT WORKS",
+        "h2": "How to Book an Appointment",
+        "p": "Simple 4-step process — from request to appointment in 15 minutes.",
+        "steps": [
+            {
+                "num": "1",
+                "title": "Choose a Doctor",
+                "text": "Browse our specialists online."
+            },
+            {
+                "num": "2",
+                "title": "Pick a Date",
+                "text": "Select a convenient time."
+            },
+            {
+                "num": "3",
+                "title": "Fill the Form",
+                "text": "Your details in 30 seconds."
+            },
+            {
+                "num": "4",
+                "title": "Confirmation",
+                "text": "SMS reminder 1 hour before."
+            }
+        ]
+    },
+    "doctors": {
+        "badge": "OUR TEAM",
+        "h2": "Meet Our Experienced Doctors",
+        "p": "Highly qualified specialists who use the latest medical technologies and care about every patient.",
+        "items": [
+            {
+                "photo": "https://picsum.photos/seed/doctor1-2026/400/400",
+                "name": "Dr. Emily Carter",
+                "specialty": "Family Medicine",
+                "experience": "14 years",
+                "bio": "Leading specialist in preventive medicine and family health."
+            },
+            {
+                "photo": "https://picsum.photos/seed/doctor2-2026/400/400",
+                "name": "Dr. Michael Rodriguez",
+                "specialty": "Cardiology",
+                "experience": "18 years",
+                "bio": "Expert in heart ultrasound and complex cardiac cases."
+            },
+            {
+                "photo": "https://picsum.photos/seed/doctor3-2026/400/400",
+                "name": "Dr. Sophia Patel",
+                "specialty": "Pediatrics",
+                "experience": "11 years",
+                "bio": "Children’s doctor loved by kids and parents."
+            },
+            {
+                "photo": "https://picsum.photos/seed/doctor4-2026/400/400",
+                "name": "Dr. James Thompson",
+                "specialty": "Laboratory Diagnostics",
+                "experience": "22 years",
+                "bio": "Head of the modern diagnostic laboratory."
+            }
+        ]
+    },
+    "gallery": {
+        "badge": "GALLERY",
+        "h2": "Our Clinic & Happy Patients",
+        "p": "Modern interiors, advanced equipment and satisfied patients of MediBook Clinic.",
+        "images": [
+            {
+                "url": "https://picsum.photos/seed/clinic-interior-modern-2026/600/400",
+                "alt": "Modern clinic interior"
+            },
+            {
+                "url": "https://picsum.photos/seed/doctor-with-patient-2026/600/400",
+                "alt": "Doctor during consultation"
+            },
+            {
+                "url": "https://picsum.photos/seed/laboratory-equipment-2026/600/400",
+                "alt": "Advanced laboratory"
+            },
+            {
+                "url": "https://picsum.photos/seed/ultrasound-room-2026/600/400",
+                "alt": "Ultrasound room"
+            },
+            {
+                "url": "https://picsum.photos/seed/happy-patient-2026/600/400",
+                "alt": "Happy patient"
+            },
+            {
+                "url": "https://picsum.photos/seed/waiting-room-2026/600/400",
+                "alt": "Comfortable waiting area"
+            }
+        ]
+    },
+    "reviews": {
+        "badge": "REVIEWS",
+        "h2": "What Our Patients Say",
+        "items": [
+            {
+                "stars": "★★★★★",
+                "text": "Booked online in 1 minute! The doctor saw me exactly on time. Extremely satisfied.",
+                "name": "Alexander M.",
+                "info": "New York • 2 weeks ago"
+            },
+            {
+                "stars": "★★★★★",
+                "text": "Online cardiology consultation — super convenient. Highly recommend!",
+                "name": "Maria K.",
+                "info": "New York • 1 month ago"
+            },
+            {
+                "stars": "★★★★★",
+                "text": "My child wasn’t scared of the pediatrician thanks to the warm atmosphere. Thank you!",
+                "name": "Ivanenko Family",
+                "info": "New York • 3 weeks ago"
+            }
+        ]
+    },
+    "seo_text": {
+        "h2": "Online Doctor Appointment in New York — MediBook Clinic",
+        "p1": "MediBook Clinic is a modern private medical center in the heart of New York. We made booking a doctor as simple and fast as possible.",
+        "p2": "24/7 online booking, experienced specialists, state-of-the-art equipment and personal care for every patient."
+    },
+    "faq": {
+        "h2": "Frequently Asked Questions",
+        "items": [
+            {
+                "q": "How much does an appointment cost?",
+                "a": "Prices start from $95. Exact cost is shown when booking."
+            },
+            {
+                "q": "Can I book online?",
+                "a": "Yes, instant booking in 60 seconds via website or messengers."
+            },
+            {
+                "q": "Do you offer online consultations?",
+                "a": "Yes, video consultations with any specialist."
+            },
+            {
+                "q": "How quickly can I get an appointment?",
+                "a": "In most cases — on the same day."
+            },
+            {
+                "q": "Do you treat children?",
+                "a": "Yes, we have an experienced pediatrician."
+            },
+            {
+                "q": "Is a referral required?",
+                "a": "No, we accept everyone without a referral."
+            }
+        ]
+    },
+    "order_form": {
+        "h2": "Book an Appointment Online",
+        "p": "Fill out the form — we will call you within 15 minutes and confirm your appointment",
+        "success_title": "Thank You! Request Received",
+        "success_text": "Our administrator will contact you within 15 minutes.",
+        "error_text": "Error sending the request. Please try again or call us.",
+        "labels": {
+            "name": "Full Name",
+            "phone": "Phone Number",
+            "message": "Preferred date, time and specialty"
+        }
+    },
+    "footer": {
+        "about": "MediBook Clinic — modern private medical center in New York. Fast booking, professional doctors and care for your health.",
+        "districts": "Manhattan, Brooklyn, Queens and all New York City",
+        "copyright": "© 2026 MediBook Clinic. All rights reserved."
+    },
+    "schema": {
+        "name": "MediBook Clinic",
+        "description": "Private clinic in New York — online doctor appointment",
+        "url": "https://medibookclinic.com",
+        "telephone": "+12345678900",
+        "streetAddress": "Main Street 1",
+        "addressLocality": "New York",
+        "addressCountry": "US",
+        "openingHours": "Mo-Su 08:00-20:00",
+        "priceRange": "$$",
+        "ratingValue": "4.98",
+        "reviewCount": "1247",
+        "image": "https://picsum.photos/seed/modern-private-clinic-2026/1200/630"
+    },
+    "email_settings": {
+        "recipient": "rbilohash@gmail.com",
+        "from_email": "no-reply@medibookclinic.com",
+        "from_name": "MediBook Clinic — New York",
+        "subject_prefix": "New Appointment Request — ",
+        "success_redirect": "?success=1",
+        "error_redirect": "?error=1",
+        "company_name": "MediBook Clinic",
+        "city": "New York"
+    },
+    "custom_code": {
+        "head": "<!-- Add your own code in <head> (Google Analytics etc.) -->",
+        "style": "",
+        "js": "// Add your custom JavaScript here",
+        "footer_html": "<!-- HTML before </body> -->"
+    }
+}
