@@ -89,7 +89,3 @@ The website features reliable partners:
 The banner fully complies with GDPR requirements and maintains a good balance between user experience and legal compliance.
 
 ---
-
-Ready for use.
-
-Would you like me to expand this description further with sections like **Technical Stack**, **Installation Instructions**, **Project Structure**, or detailed information about how the AI Consultant works?
