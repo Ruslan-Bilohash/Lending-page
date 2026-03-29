@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- Головна литовська версія (index.php) -->
+    <url>
+        <loc>https://ukrbud.lt/</loc>
+        <lastmod>2026-03-29</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <!-- Альтернативні мови -->
+        <xhtml:link rel="alternate" hreflang="lt" href="https://ukrbud.lt/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ukrbud.lt/ru.php" />
+        <xhtml:link rel="alternate" hreflang="uk" href="https://ukrbud.lt/ua.php" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ukrbud.lt/en.php" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ukrbud.lt/" />
+    </url>
+
+    <!-- Російська версія -->
+    <url>
+        <loc>https://ukrbud.lt/ru.php</loc>
+        <lastmod>2026-03-29</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="lt" href="https://ukrbud.lt/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ukrbud.lt/ru.php" />
+        <xhtml:link rel="alternate" hreflang="uk" href="https://ukrbud.lt/ua.php" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ukrbud.lt/en.php" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ukrbud.lt/" />
+    </url>
+
+    <!-- Українська версія -->
+    <url>
+        <loc>https://ukrbud.lt/ua.php</loc>
+        <lastmod>2026-03-29</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="lt" href="https://ukrbud.lt/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ukrbud.lt/ru.php" />
+        <xhtml:link rel="alternate" hreflang="uk" href="https://ukrbud.lt/ua.php" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ukrbud.lt/en.php" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ukrbud.lt/" />
+    </url>
+
+    <!-- Англійська версія -->
+    <url>
+        <loc>https://ukrbud.lt/en.php</loc>
+        <lastmod>2026-03-29</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="lt" href="https://ukrbud.lt/" />
+        <xhtml:link rel="alternate" hreflang="ru" href="https://ukrbud.lt/ru.php" />
+        <xhtml:link rel="alternate" hreflang="uk" href="https://ukrbud.lt/ua.php" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://ukrbud.lt/en.php" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://ukrbud.lt/" />
+    </url>
+
+    <!-- Додаткові важливі сторінки (якщо є) -->
+    <!-- Якщо в майбутньому додасте окремі сторінки, наприклад privatumo-politika.php, додайте їх сюди -->
+
+    <!-- Приклад для політики конфіденційності (якщо створите файл) -->
+    <!--
+    <url>
+        <loc>https://ukrbud.lt/privatumo-politika.php</loc>
+        <lastmod>2026-03-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    -->
+
+</urlset>
