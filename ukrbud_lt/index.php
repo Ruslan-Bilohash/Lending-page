@@ -1,9 +1,4 @@
 <?php
-
-// ========================================================
-// Ukrbud.lt - index.php (Pilna galinga versija 2026)
-// Maksimalus SEO + geriausias kalkuliatorius + gražūs laiškai
-// ========================================================
 session_start();
 
 if (empty($_SESSION['csrf_token'])) {
