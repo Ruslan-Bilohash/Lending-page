@@ -24,7 +24,16 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Помилка відп
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="Ruslan Bilohash">
     <meta name="theme-color" content="#10b981">
-    <link rel="canonical" href="https://bilohash.com/ua.php">
+    <link rel="canonical" href="https://meistru.lt/ua.php">
+
+<!-- hreflang -->
+<link rel="alternate" hreflang="lt" href="https://meistru.lt/" />
+<link rel="alternate" hreflang="lt" href="https://meistru.lt/index.php" />
+<link rel="alternate" hreflang="ru" href="https://meistru.lt/ru.php" />
+<link rel="alternate" hreflang="uk" href="https://meistru.lt/ua.php" />
+<link rel="alternate" hreflang="en" href="https://meistru.lt/en.php" />
+<link rel="alternate" hreflang="no" href="https://meistru.lt/no.php" />
+<link rel="alternate" hreflang="x-default" href="https://meistru.lt/" />
     <!-- OPEN GRAPH -->
     <meta property="og:title" content="Прибирання у Вільнюсі | Клінінг Вільнюс | Професійна уборка квартир, офісів і після ремонту">
     <meta property="og:description" content="Клінінг Вільнюс — професійне прибирання квартир, офісів, після ремонту у Вільнюсі. Еко-засоби, швидкий виїзд, гарантія якості, пилососи та професійні ганчірки. +370 644 74842">
