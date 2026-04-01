@@ -22,6 +22,15 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Klaida siunčiant užkl
     <meta name="keywords" content="valymas Vilnius, meistru valymas, butų valymas Vilnius, biurų valymas, valymas po remonto Vilnius, 30% nuolaida valymas">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://meistru.lt/">
+
+<!-- hreflang -->
+<link rel="alternate" hreflang="lt" href="https://meistru.lt/" />
+<link rel="alternate" hreflang="lt" href="https://meistru.lt/index.php" />
+<link rel="alternate" hreflang="ru" href="https://meistru.lt/ru.php" />
+<link rel="alternate" hreflang="uk" href="https://meistru.lt/ua.php" />
+<link rel="alternate" hreflang="en" href="https://meistru.lt/en.php" />
+<link rel="alternate" hreflang="no" href="https://meistru.lt/no.php" />
+<link rel="alternate" hreflang="x-default" href="https://meistru.lt/" />
     <meta name="author" content="Meistru Valymas">
     <meta name="theme-color" content="#10b981">
 
