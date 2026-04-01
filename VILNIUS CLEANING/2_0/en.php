@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/traffic_logger.php';
+
+// Підключаємо reCAPTCHA v2 з новими ключами
+require_once __DIR__ . '/recaptcha.php';
+
 // ====================== en.php ======================
 // ПОВНІСТЬЮ ГОТОВИЙ сайт Vilnius Cleaning (англійською)
 // професійне прибирання квартир, офісів, після ремонту, чисті кухні, вітальні, ванни, пилососи, ганчірки, мочалки, швабри, еко-засоби, процес уборки, прибиральниці в роботі
@@ -44,7 +48,9 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Error sending the reque
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
-    <style>
+    <!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap');
         .hero-bg { background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://picsum.photos/seed/professional-cleaning-vilnius-hero-2026/2000/1200') center/cover no-repeat; }
         .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -341,49 +347,53 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Error sending the reque
             </div>
         </div>
     </section>
+<!-- ==================== ORDER FORM WITH reCAPTCHA v2 ==================== -->
+<section id="order" class="py-24 bg-gradient-to-br from-emerald-700 to-teal-800 text-white">
+    <div class="max-w-4xl mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-5xl font-bold">Order Cleaning in Vilnius Right Now</h2>
+            <p class="mt-4 text-xl opacity-90">We reply within 15 minutes • Fixed price • All districts of Vilnius</p>
+        </div>
 
-    <!-- ORDER FORM + BEAUTIFUL SUCCESS MESSAGE -->
-    <section id="order" class="py-24 bg-gradient-to-br from-emerald-700 to-teal-800 text-white">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-5xl font-bold">Order Cleaning in Vilnius Right Now</h2>
-                <p class="mt-4 text-xl opacity-90">We reply within 15 minutes • Fixed price • All districts of Vilnius</p>
+        <?php if ($success): ?>
+            <div class="bg-emerald-500 text-white p-10 rounded-3xl text-center mb-8 shadow-2xl">
+                <i class="fa-solid fa-circle-check text-7xl mb-6"></i>
+                <h3 class="text-4xl font-bold">Thank you!</h3>
+                <p class="text-2xl mt-4">Your request for professional cleaning in Vilnius has been received.<br>We will contact you very soon.</p>
+                <div class="mt-8 text-xl opacity-90">Our team is already preparing for your perfect cleanliness ✨</div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($error): ?>
+            <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+
+        <form id="order-form" method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
+            <div>
+                <label class="block text-sm mb-2">Your Name</label>
+                <input type="text" name="name" required class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60">
+            </div>
+            <div>
+                <label class="block text-sm mb-2">Phone Number</label>
+                <input type="tel" name="phone" required class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm mb-2">Address in Vilnius and additional wishes</label>
+                <textarea name="message" rows="5" class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60"></textarea>
             </div>
 
-            <?php if ($success): ?>
-                <div class="bg-emerald-500 text-white p-10 rounded-3xl text-center mb-8 shadow-2xl">
-                    <i class="fa-solid fa-circle-check text-7xl mb-6"></i>
-                    <h3 class="text-4xl font-bold">Thank you!</h3>
-                    <p class="text-2xl mt-4">Your request for professional cleaning in Vilnius has been received.<br>We will contact you very soon to confirm all details and schedule the cleaning.</p>
-                    <div class="mt-8 text-xl opacity-90">Our team is already preparing for your perfect cleanliness ✨</div>
-                </div>
-            <?php endif; ?>
+            <!-- reCAPTCHA v2 -->
+            <?php renderRecaptcha(); ?>
 
-            <?php if ($error): ?>
-                <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?php echo $error; ?></div>
-            <?php endif; ?>
-
-            <form method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <label class="block text-sm mb-2">Your Name</label>
-                    <input type="text" name="name" required class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60">
-                </div>
-                <div>
-                    <label class="block text-sm mb-2">Phone Number</label>
-                    <input type="tel" name="phone" required class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm mb-2">Address in Vilnius and additional wishes (number of rooms, type of cleaning)</label>
-                    <textarea name="message" rows="5" class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60"></textarea>
-                </div>
-                <div class="md:col-span-2 text-center">
-                    <button type="submit" class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
-                        <i class="fa-solid fa-paper-plane"></i> SEND CLEANING REQUEST
-                    </button>
-                </div>
-            </form>
-        </div>
-    </section>
+            <div class="md:col-span-2 text-center">
+                <button type="submit" 
+                        class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
+                    <i class="fa-solid fa-paper-plane"></i> SEND CLEANING REQUEST
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
 
     <!-- CONTACTS BAR -->
     <div class="bg-white py-8 border-t border-b">
@@ -464,5 +474,17 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Error sending the reque
             if (!e.target.closest('.relative')) document.getElementById('langDropdown').classList.add('hidden');
         });
     </script>
+<script src="/chat-widget.js" defer></script>
+<script>
+// Захист форми від відправки без reCAPTCHA
+document.getElementById('order-form').addEventListener('submit', function(e) {
+    const recaptchaResponse = document.querySelector('.g-recaptcha-response');
+    
+    if (!recaptchaResponse || recaptchaResponse.value.trim() === '') {
+        e.preventDefault();
+        alert('Будь ласка, підтвердіть, що ви не робот (поставте галочку "I\'m not a robot").');
+    }
+});
+</script>
 </body>
 </html>
