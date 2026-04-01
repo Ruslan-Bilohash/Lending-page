@@ -1,4 +1,6 @@
 <?php
+// Підключаємо reCAPTCHA v2
+require_once __DIR__ . '/recaptcha.php';
 require_once __DIR__ . '/traffic_logger.php';
 // ====================== ru.php ======================
 // ПОВНИЙ РОСІЙСЬКИЙ ВАРІАНТ — Meistru Valymas
@@ -37,7 +39,9 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Ошибка отпра
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
-    <style>
+    <!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<style>
         .hero-bg { background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://picsum.photos/seed/professional-cleaning-vilnius-hero-2026/2000/1200') center/cover no-repeat; }
         .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-hover:hover { transform: translateY(-15px) scale(1.03); box-shadow: 0 25px 50px -12px rgb(16 185 129 / 0.4); }
@@ -329,6 +333,7 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Ошибка отпра
     </section>
 
     <!-- ORDER FORM + КРАСИВОЕ СООБЩЕНИЕ -->
+   <!-- ==================== ФОРМА ЗАКАЗА З reCAPTCHA v2 ==================== -->
     <section id="order" class="py-24 bg-gradient-to-br from-emerald-700 to-teal-800 text-white">
         <div class="max-w-4xl mx-auto px-6">
             <div class="text-center mb-12">
@@ -340,16 +345,16 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Ошибка отпра
                 <div class="bg-emerald-500 text-white p-10 rounded-3xl text-center mb-8 shadow-2xl">
                     <i class="fa-solid fa-circle-check text-7xl mb-6"></i>
                     <h3 class="text-4xl font-bold">Спасибо!</h3>
-                    <p class="text-2xl mt-4">Ваш запрос на профессиональную уборку в Вильнюсе получен.<br>Мы скоро свяжемся с вами для уточнения всех деталей и согласования времени уборки.</p>
+                    <p class="text-2xl mt-4">Ваш запрос на профессиональную уборку в Вильнюсе получен.<br>Мы скоро свяжемся с вами для уточнения всех деталей.</p>
                     <div class="mt-8 text-xl opacity-90">Наша команда уже готовится к вашей идеальной чистоте ✨</div>
                 </div>
             <?php endif; ?>
 
             <?php if ($error): ?>
-                <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?php echo $error; ?></div>
+                <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
+            <form id="order-form" method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
                 <div>
                     <label class="block text-sm mb-2">Ваше имя</label>
                     <input type="text" name="name" required class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60">
@@ -362,8 +367,13 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Ошибка отпра
                     <label class="block text-sm mb-2">Адрес в Вильнюсе и дополнительные пожелания (количество комнат, тип уборки)</label>
                     <textarea name="message" rows="5" class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60"></textarea>
                 </div>
+
+                <!-- reCAPTCHA v2 -->
+                <?php renderRecaptcha(); ?>
+
                 <div class="md:col-span-2 text-center">
-                    <button type="submit" class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
+                    <button type="submit" 
+                            class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
                         <i class="fa-solid fa-paper-plane"></i> ОТПРАВИТЬ ЗАЯВКУ НА УБОРКУ
                     </button>
                 </div>
@@ -447,6 +457,19 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Ошибка отпра
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.relative')) document.getElementById('langDropdown').classList.add('hidden');
         });
+    </script>
+<script src="/chat-widget.js" defer></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <!-- JavaScript захист форми (обов'язково!) -->
+    <script>
+    document.getElementById('order-form').addEventListener('submit', function(e) {
+        const response = document.querySelector('.g-recaptcha-response');
+        if (!response || response.value.trim() === '') {
+            e.preventDefault();
+            alert('Пожалуйста, подтвердите, что вы не робот (поставьте галочку "Я не робот").');
+        }
+    });
     </script>
 </body>
 </html>
