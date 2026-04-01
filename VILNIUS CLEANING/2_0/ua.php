@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/traffic_logger.php';
+// Підключаємо reCAPTCHA v2
+require_once __DIR__ . '/recaptcha.php';
 // ====================== ua.php ======================
 // ПОВНІСТЬЮ ГОТОВИЙ сайт Клінінг Вільнюс (українською)
 // професійне прибирання квартир, офісів, після ремонту, чисті кухні, вітальні, ванни, пилососи, ганчірки, мочалки, швабри, еко-засоби, процес уборки, прибиральниці в роботі
@@ -41,7 +43,9 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Помилка відп
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
-    <style>
+<!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap');
         .hero-bg { background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://picsum.photos/seed/professional-cleaning-vilnius-hero/2000/1200') center/cover no-repeat; }
         .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -346,26 +350,30 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Помилка відп
         </div>
     </section>
 
-    <!-- ORDER FORM -->
+    <!-- ==================== ФОРМА ЗАМОВЛЕННЯ З reCAPTCHA v2 ==================== -->
     <section id="order" class="py-24 bg-gradient-to-br from-emerald-700 to-teal-800 text-white">
         <div class="max-w-4xl mx-auto px-6">
             <div class="text-center mb-12">
                 <h2 class="text-5xl font-bold">Замовити прибирання у Вільнюсі прямо зараз</h2>
-                <p class="mt-4 text-xl opacity-90">Відповідаємо протягом 15 хвилин • Виїзд по всьому Вільнюсу • Фіксована ціна</p>
+                <p class="mt-4 text-xl opacity-90">Відповідаємо протягом 15 хвилин • Фіксована ціна • По всьому Вільнюсу</p>
             </div>
+
             <?php if ($success): ?>
-                <div class="bg-emerald-500 text-white p-8 rounded-3xl text-center mb-8">
-                    <i class="fa-solid fa-circle-check text-6xl mb-4"></i>
-                    <h3 class="text-3xl font-bold">Дякуємо! Запит на прибирання у Вільнюсі отримано.</h3>
-                    <p class="mt-3">Ми зв'яжемося з вами найближчим часом для уточнення деталей.</p>
+                <div class="bg-emerald-500 text-white p-10 rounded-3xl text-center mb-8 shadow-2xl">
+                    <i class="fa-solid fa-circle-check text-7xl mb-6"></i>
+                    <h3 class="text-4xl font-bold">Дякуємо!</h3>
+                    <p class="text-2xl mt-4">Ваш запит на професійне прибирання у Вільнюсі отримано.<br>Ми скоро зв’яжемося з вами для уточнення деталей.</p>
+                    <div class="mt-8 text-xl opacity-90">Наша команда вже готується до вашої ідеальної чистоти ✨</div>
                 </div>
             <?php endif; ?>
+
             <?php if ($error): ?>
-                <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?php echo $error; ?></div>
+                <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
-            <form method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
+
+            <form id="order-form" method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
                 <div>
-                    <label class="block text-sm mb-2">Ім'я</label>
+                    <label class="block text-sm mb-2">Ваше ім’я</label>
                     <input type="text" name="name" required class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60">
                 </div>
                 <div>
@@ -376,8 +384,13 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Помилка відп
                     <label class="block text-sm mb-2">Адреса у Вільнюсі та додаткові побажання (кількість кімнат, тип прибирання)</label>
                     <textarea name="message" rows="5" class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60"></textarea>
                 </div>
+
+                <!-- reCAPTCHA v2 -->
+                <?php renderRecaptcha(); ?>
+
                 <div class="md:col-span-2 text-center">
-                    <button type="submit" class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
+                    <button type="submit" 
+                            class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
                         <i class="fa-solid fa-paper-plane"></i> НАДІСЛАТИ ЗАПИТ НА ПРИБИРАННЯ
                     </button>
                 </div>
@@ -462,6 +475,20 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Помилка відп
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.relative')) document.getElementById('langDropdown').classList.add('hidden');
         });
+    </script>
+
+<script src="/chat-widget.js" defer></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <!-- JavaScript захист форми (обов'язково!) -->
+    <script>
+    document.getElementById('order-form').addEventListener('submit', function(e) {
+        const response = document.querySelector('.g-recaptcha-response');
+        if (!response || response.value.trim() === '') {
+            e.preventDefault();
+            alert('Будь ласка, підтвердіть, що ви не робот (поставте галочку "Я не робот").');
+        }
+    });
     </script>
 </body>
 </html>
