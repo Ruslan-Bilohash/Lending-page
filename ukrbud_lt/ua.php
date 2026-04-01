@@ -1,7 +1,7 @@
 <?php
 // ========================================================
 // Ukrbud.lt - ua.php (Повна потужна версія 2026)
-// Максимальний SEO + найкращий калькулятор + красиві листи
+// Максимальний SEO + найкращий калькулятор + красиві листи + захист reCAPTCHA v2
 // ========================================================
 session_start();
 
@@ -9,20 +9,27 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Змінні для форми замовлення
+// Підключаємо reCAPTCHA v2
+require_once 'recaptcha.php';
+
 $success = false;
 $error = '';
 
 // ========================================================
-// ОБРОБКА ФОРМИ ЗАМОВЛЕННЯ — з красивими листами
+// ОБРОБКА ФОРМИ ЗАМОВЛЕННЯ — з reCAPTCHA v2
 // ========================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
+    
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = 'Помилка безпеки. Оновіть сторінку.';
-    } else {
-        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES));
-        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES));
-        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES));
+    } 
+    elseif (!isset($_POST['g-recaptcha-response']) || !verifyRecaptcha($_POST['g-recaptcha-response'])) {
+        $error = 'Не вдалося підтвердити, що ви не робот. Поставте галочку «Я не робот».';
+    } 
+    else {
+        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES | ENT_HTML5));
 
         if (empty($name) || empty($phone)) {
             $error = 'Ім’я та номер телефону обов’язкові!';
@@ -33,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
 
             // ==================== ЛИСТ КЛІЄНТУ (гарний HTML) ====================
             $client_subject = "✅ Замовлення №$order_id прийнято | Ukrbud.lt";
-
             $client_message = '
             <!DOCTYPE html>
             <html>
@@ -56,28 +62,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
                         <h1 style="margin:0; font-size:32px;">Ваше замовлення успішно прийнято!</h1>
                         <p style="margin:15px 0 0; font-size:20px;">Номер замовлення: <strong>' . $order_id . '</strong></p>
                     </div>
-                   
                     <div class="content">
                         <p>Вітаємо, <strong>' . $name . '</strong>!</p>
                         <p>Дякуємо за довіру до <strong>Ukrbud.lt</strong> — професійної клінінгової компанії у Вільнюсі.</p>
-                       
                         <div class="info-box">
                             <strong>Ваше замовлення №' . $order_id . ' прийнято та обробляється.</strong><br><br>
-                            Наш менеджер зв’яжеться з вами протягом 15–60 хвилин для уточнення деталей та призначення зручного часу приїзду бригади.
+                            Наш менеджер зв’яжеться з вами протягом 15–60 хвилин для уточнення деталей.
                         </div>
-
                         <p><strong>Дані вашого замовлення:</strong></p>
                         <p>Ім’я: ' . $name . '<br>
                            Телефон: ' . $phone . '<br>
                            Повідомлення: ' . nl2br($message) . '</p>
-
                         <p style="text-align:center;">
                             <a href="tel:+37064474842" class="button">Зателефонувати нам зараз →</a>
                         </p>
-
                         <p>Якщо з’явилися додаткові побажання — просто відповідайте на цей лист.</p>
                     </div>
-                   
                     <div class="footer">
                         З повагою,<br>
                         <strong>Команда Ukrbud.lt</strong><br>
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
             </body>
             </html>';
 
-            // ==================== ЛИСТ АДМІНУ (тобі) ====================
+            // ==================== ЛИСТ АДМІНУ ====================
             $admin_subject = "Нове замовлення №$order_id — Ukrbud.lt";
             $admin_body = "НОВЕ ЗАМОВЛЕННЯ НА ПРИБИРАННЯ\n\n";
             $admin_body .= "Номер замовлення: $order_id\n";
@@ -97,13 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
             $admin_body .= "Повідомлення:\n$message\n\n";
             $admin_body .= "Дата: " . date('d.m.Y H:i:s') . "\n";
             $admin_body .= "IP: " . $_SERVER['REMOTE_ADDR'] . "\n";
+            $admin_body .= "reCAPTCHA v2: Пройдено успішно\n";
 
             $admin_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-
-            // Відправка листів
             $headers_client = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
 
-            mail("rbilohash@gmail.com, valeriapilipiuk@gmail.com, ulianasemashko@gmail.com, booking@balticclean.lt", $admin_subject, $admin_body, $admin_headers);
+            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $admin_subject, $admin_body, $admin_headers);
             mail($email ?? "rbilohash@gmail.com", $client_subject, $client_message, $headers_client);
 
             $success = true;
@@ -113,30 +112,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
 }
 
 // ========================================================
-// Обробка підписки на знижку 30%
+// Обробка підписки на знижку 30% (без змін)
 // ========================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
     $email = trim(htmlspecialchars($_POST['subscribe_email'] ?? '', ENT_QUOTES));
-   
+  
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-       
+      
         if (!is_dir('subscribe')) mkdir('subscribe', 0755, true);
-       
+      
         $file = 'subscribe/emails.txt';
         $exists = false;
-       
+      
         if (file_exists($file)) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             $exists = in_array($email, $lines);
         }
-       
+      
         if (!$exists) {
             file_put_contents($file, $email . PHP_EOL, FILE_APPEND | LOCK_EX);
-           
+          
             $discount_code = "UKR30-" . strtoupper(substr(md5($email . time()), 0, 6));
-           
+          
             $subject = "🎁 Ваша знижка 30% на прибирання у Вільнюсі від Ukrbud.lt";
-           
+          
             $message = '
             <!DOCTYPE html>
             <html>
@@ -160,52 +159,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                         <h1 style="margin:0; font-size:32px;">🎁 Вітаємо!</h1>
                         <p style="margin:10px 0 0; font-size:20px;">Ви отримали знижку 30%</p>
                     </div>
-                   
                     <div class="content">
                         <p>Вітаємо!</p>
-                        <p>Дякуємо, що підписалися на розсилку Ukrbud.lt — професійної клінінгової компанії у Вільнюсі.</p>
-                        <p>Ваш подарунок — <strong>знижка 30% на перше прибирання</strong> (після ремонту, офісів або комерційних приміщень).</p>
-                       
+                        <p>Дякуємо, що підписалися на розсилку Ukrbud.lt.</p>
+                        <p>Ваш подарунок — <strong>знижка 30% на перше прибирання</strong>.</p>
                         <div class="discount-box">
                             <p style="margin:0 0 10px; font-size:18px; color:#64748b;">Ваш промокод:</p>
                             <div class="code">' . $discount_code . '</div>
                             <p style="margin:15px 0 0; color:#64748b;">Діє 30 днів</p>
                         </div>
-                       
                         <p style="text-align:center;">
                             <a href="https://ukrbud.lt/#contact" class="button">Замовити прибирання зі знижкою →</a>
                         </p>
-                       
-                        <p>Просто покажіть цей промокод нашому менеджеру при оформленні замовлення.</p>
-                       
-                        <p>З повагою,<br>
-                        <strong>Команда Ukrbud.lt</strong><br>
-                        Професійне прибирання у Вільнюсі<br>
-                        +370 644 74842</p>
+                        <p>Просто покажіть цей промокод нашому менеджеру.</p>
+                        <p>З повагою,<br><strong>Команда Ukrbud.lt</strong></p>
                     </div>
-                   
                     <div class="footer">
                         © 2026 Ukrbud.lt — Прибирання після ремонту, офісів та комерційних приміщень у Вільнюсі<br>
-                        Якщо ви більше не бажаєте отримувати листи — просто відповідайте на цей лист текстом «Відписатися».
+                        Якщо ви більше не бажаєте отримувати листи — просто відповідайте текстом «Відписатися».
                     </div>
                 </div>
             </body>
             </html>';
 
-            $headers = "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type: text/html; charset=utf-8\r\n";
-            $headers .= "From: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
-            $headers .= "Reply-To: no-reply@ukrbud.lt\r\n";
-
+            $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
             mail($email, $subject, $message, $headers);
 
             $notify_subject = "Нова підписка на знижку 30% — ukrbud.lt";
             $notify_body = "Нова підписка:\nEmail: $email\nПромокод: $discount_code\nДата: " . date('d.m.Y H:i:s') . "\nIP: " . $_SERVER['REMOTE_ADDR'];
-            $notify_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-           
-            mail("rbilohash@gmail.com, valeriapilipiuk@gmail.com, ulianasemashko@gmail.com, booking@balticclean.lt", $notify_subject, $notify_body, $notify_headers);
+            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $notify_subject, $notify_body, "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n");
         }
-       
+      
         $subscribe_success = true;
     } else {
         $subscribe_error = 'Введіть коректну email адресу';
@@ -346,7 +330,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-
+<!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
         .heading-font { font-family: 'Space Grotesk', sans-serif; }
@@ -735,7 +720,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                     <input type="text" name="name" required placeholder="Ваше ім’я" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <input type="tel" name="phone" required placeholder="+370 644 74842" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <textarea name="message" rows="5" placeholder="Опишіть завдання (прибирання після ремонту квартири, офіс 150 м² тощо)" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none"></textarea>
-                    <button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Надіслати заявку</button>
+                    <!-- reCAPTCHA v2 -->
+                    <?php renderRecaptcha(); ?>
+					<button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Надіслати заявку</button>
                 </form>
             </div>
             <div class="flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
