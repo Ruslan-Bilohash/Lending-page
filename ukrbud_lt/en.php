@@ -1,7 +1,7 @@
 <?php
 // ========================================================
 // Ukrbud.lt - en.php (Full powerful version 2026)
-// Maximum SEO + Best calculator + Beautiful emails
+// Maximum SEO + Best calculator + Beautiful emails + reCAPTCHA v2 protection
 // ========================================================
 session_start();
 
@@ -9,20 +9,27 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Variables for order form
+// Подключаем reCAPTCHA v2
+require_once 'recaptcha.php';
+
 $success = false;
 $error = '';
 
 // ========================================================
-// ORDER FORM PROCESSING — with beautiful emails
+// ORDER FORM PROCESSING — with reCAPTCHA v2
 // ========================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
+    
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = 'Security error. Please refresh the page.';
-    } else {
-        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES));
-        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES));
-        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES));
+    } 
+    elseif (!isset($_POST['g-recaptcha-response']) || !verifyRecaptcha($_POST['g-recaptcha-response'])) {
+        $error = 'Failed to verify that you are not a robot. Please check the box "I\'m not a robot".';
+    } 
+    else {
+        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES | ENT_HTML5));
 
         if (empty($name) || empty($phone)) {
             $error = 'Name and phone number are required!';
@@ -33,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
 
             // ==================== EMAIL TO CLIENT (beautiful HTML) ====================
             $client_subject = "✅ Order #$order_id Accepted | Ukrbud.lt";
-
             $client_message = '
             <!DOCTYPE html>
             <html>
@@ -56,28 +62,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
                         <h1 style="margin:0; font-size:32px;">Your Order Has Been Accepted!</h1>
                         <p style="margin:15px 0 0; font-size:20px;">Order number: <strong>' . $order_id . '</strong></p>
                     </div>
-                   
                     <div class="content">
                         <p>Hello, <strong>' . $name . '</strong>!</p>
                         <p>Thank you for trusting <strong>Ukrbud.lt</strong> — a professional cleaning company in Vilnius.</p>
-                       
                         <div class="info-box">
                             <strong>Your order #' . $order_id . ' has been accepted and is being processed.</strong><br><br>
                             Our manager will contact you within 15–60 minutes to clarify details and schedule a convenient time for the team to arrive.
                         </div>
-
                         <p><strong>Your order details:</strong></p>
                         <p>Name: ' . $name . '<br>
                            Phone: ' . $phone . '<br>
                            Message: ' . nl2br($message) . '</p>
-
                         <p style="text-align:center;">
                             <a href="tel:+37064474842" class="button">Call us now →</a>
                         </p>
-
                         <p>If you have any additional requests — simply reply to this email.</p>
                     </div>
-                   
                     <div class="footer">
                         Best regards,<br>
                         <strong>Ukrbud.lt Team</strong><br>
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
             </body>
             </html>';
 
-            // ==================== EMAIL TO ADMIN (you) ====================
+            // ==================== EMAIL TO ADMIN ====================
             $admin_subject = "New Order #$order_id — Ukrbud.lt";
             $admin_body = "NEW CLEANING ORDER\n\n";
             $admin_body .= "Order number: $order_id\n";
@@ -97,13 +97,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
             $admin_body .= "Message:\n$message\n\n";
             $admin_body .= "Date: " . date('d.m.Y H:i:s') . "\n";
             $admin_body .= "IP: " . $_SERVER['REMOTE_ADDR'] . "\n";
+            $admin_body .= "reCAPTCHA v2: Passed\n";
 
             $admin_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-
-            // Send emails
             $headers_client = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
 
-            mail("rbilohash@gmail.com, valeriapilipiuk@gmail.com, ulianasemashko@gmail.com, booking@balticclean.lt", $admin_subject, $admin_body, $admin_headers);
+            // Send emails
+            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $admin_subject, $admin_body, $admin_headers);
             mail($email ?? "rbilohash@gmail.com", $client_subject, $client_message, $headers_client);
 
             $success = true;
@@ -113,30 +113,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
 }
 
 // ========================================================
-// 30% Discount Subscription Processing
+// 30% Discount Subscription Processing (без изменений)
 // ========================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
     $email = trim(htmlspecialchars($_POST['subscribe_email'] ?? '', ENT_QUOTES));
-   
+  
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-       
+      
         if (!is_dir('subscribe')) mkdir('subscribe', 0755, true);
-       
+      
         $file = 'subscribe/emails.txt';
         $exists = false;
-       
+      
         if (file_exists($file)) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             $exists = in_array($email, $lines);
         }
-       
+      
         if (!$exists) {
             file_put_contents($file, $email . PHP_EOL, FILE_APPEND | LOCK_EX);
-           
+          
             $discount_code = "UKR30-" . strtoupper(substr(md5($email . time()), 0, 6));
-           
+          
             $subject = "🎁 Your 30% Discount on Cleaning in Vilnius from Ukrbud.lt";
-           
+          
             $message = '
             <!DOCTYPE html>
             <html>
@@ -160,30 +160,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                         <h1 style="margin:0; font-size:32px;">🎁 Congratulations!</h1>
                         <p style="margin:10px 0 0; font-size:20px;">You have received a 30% discount</p>
                     </div>
-                   
                     <div class="content">
                         <p>Hello!</p>
                         <p>Thank you for subscribing to the Ukrbud.lt newsletter — a professional cleaning company in Vilnius.</p>
                         <p>Your gift is a <strong>30% discount on your first cleaning</strong> (after renovation, offices or commercial premises).</p>
-                       
                         <div class="discount-box">
                             <p style="margin:0 0 10px; font-size:18px; color:#64748b;">Your promo code:</p>
                             <div class="code">' . $discount_code . '</div>
                             <p style="margin:15px 0 0; color:#64748b;">Valid for 30 days</p>
                         </div>
-                       
                         <p style="text-align:center;">
                             <a href="https://ukrbud.lt/#contact" class="button">Order cleaning with discount →</a>
                         </p>
-                       
                         <p>Simply show this code to our manager when placing an order.</p>
-                       
                         <p>Best regards,<br>
                         <strong>Ukrbud.lt Team</strong><br>
                         Professional cleaning in Vilnius<br>
                         +370 644 74842</p>
                     </div>
-                   
                     <div class="footer">
                         © 2026 Ukrbud.lt — Cleaning after renovation, offices and commercial premises in Vilnius<br>
                         If you no longer wish to receive emails — simply reply with the text "Unsubscribe".
@@ -192,20 +186,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
             </body>
             </html>';
 
-            $headers = "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type: text/html; charset=utf-8\r\n";
-            $headers .= "From: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
-            $headers .= "Reply-To: no-reply@ukrbud.lt\r\n";
-
+            $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
             mail($email, $subject, $message, $headers);
 
             $notify_subject = "New 30% Discount Subscription — ukrbud.lt";
             $notify_body = "New subscription:\nEmail: $email\nPromo code: $discount_code\nDate: " . date('d.m.Y H:i:s') . "\nIP: " . $_SERVER['REMOTE_ADDR'];
-            $notify_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-           
-            mail("rbilohash@gmail.com, valeriapilipiuk@gmail.com, ulianasemashko@gmail.com, booking@balticclean.lt", $notify_subject, $notify_body, $notify_headers);
+            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $notify_subject, $notify_body, "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n");
         }
-       
+      
         $subscribe_success = true;
     } else {
         $subscribe_error = 'Please enter a valid email address';
@@ -346,7 +334,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-
+<!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
         .heading-font { font-family: 'Space Grotesk', sans-serif; }
@@ -715,7 +704,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                     <input type="text" name="name" required placeholder="Your Name" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <input type="tel" name="phone" required placeholder="+370 644 74842" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <textarea name="message" rows="5" placeholder="Describe the task (cleaning after apartment renovation, office 150 m², etc.)" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none"></textarea>
-                    <button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Send Request</button>
+                    <!-- reCAPTCHA v2 -->
+                    <?php renderRecaptcha(); ?>
+					<button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Send Request</button>
                 </form>
             </div>
             <div class="flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
@@ -1011,5 +1002,6 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
     }
 </style>
 <?php include 'gdpr-consent.php'; ?>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>
