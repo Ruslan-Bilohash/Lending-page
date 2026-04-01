@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/traffic_logger.php';
+// Підключаємо reCAPTCHA v2
+require_once __DIR__ . '/recaptcha.php';
 // ====================== no.php ======================
 // ПОВНІСТЬЮ ГОТОВИЙ сайт Rengjøring Vilnius (норвезькою)
 // Максимальний SEO 2026 + дуже гарне повідомлення після замовлення
@@ -14,7 +17,7 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO META -->
-    <title>Profesjonell rengjøring i Vilnius | Rengjøring Vilnius | Leiligheter, kontorer og etter renovering 2026</title>
+    <title>Profesjonell rengjøring i Vilnius | Rengjøring Vilnius | Leiligheter, kontorer og etter renovering</title>
     <meta name="description" content="Profesjonell rengjøring i Vilnius ✓ Leiligheter, kontorer, etter renovering og grundig rengjøring ✓ Miljøvennlige midler, profesjonelle støvsugere, kluter og mopper ✓ Rask utrykning til alle bydeler i Vilnius ✓ 100% renhetsgaranti ✓ Fast pris ✓ Tlf: +370 644 74842">
     <meta name="keywords" content="rengjøring Vilnius, Vilnius rengjøring, leilighetsrengjøring Vilnius, kontorrengjøring Vilnius, rengjøring etter renovering Vilnius, grundig rengjøring Vilnius, eco cleaning Vilnius">
     <meta name="robots" content="index, follow, max-image-preview:large">
@@ -42,7 +45,9 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
-    <style>
+    <!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>	
+	<style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap');
         .hero-bg { background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://picsum.photos/seed/professional-cleaning-vilnius-hero-2026/2000/1200') center/cover no-repeat; }
         .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -110,7 +115,7 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
     <section class="hero-bg h-screen flex items-center text-white">
         <div class="max-w-7xl mx-auto px-6 text-center">
             <h1 class="text-5xl md:text-7xl font-bold leading-none mb-6 tracking-tighter">
-                PROFESJONELL RENGJØRING<br>I VILNIUS 2026
+                PROFESJONELL RENGJØRING<br>I VILNIUS
             </h1>
             <p class="text-2xl md:text-3xl mb-10 max-w-3xl mx-auto">Rengjøring Vilnius er rask, høy kvalitet og miljøvennlig rengjøring av leiligheter, kontorer og etter renovering i Vilnius. Vi bruker profesjonelle støvsugere, kluter, svamper, mopper og miljøvennlige midler. 100% renhetsgaranti. Rask utrykning til alle bydeler i Vilnius.</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -120,6 +125,9 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
                 <a href="tel:+37064474842" class="border-2 border-white hover:bg-white hover:text-gray-900 text-white text-xl font-semibold px-10 py-6 rounded-3xl inline-flex items-center gap-3 transition">
                     <i class="fa-solid fa-phone"></i> +370 644 74842
                 </a>
+				<a href="/kalkuliatorius.php" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-semibold px-10 py-6 rounded-3xl inline-flex items-center gap-3 transition-all shadow-xl hover:shadow-2xl active:scale-95">
+    <i class="fa-solid fa-broom"></i>Kalkulator
+</a>
             </div>
             <div class="mt-16 text-sm uppercase tracking-widest">Vilnius • Hver dag 08:00-22:00 • 100% renhetsgaranti</div>
         </div>
@@ -337,7 +345,7 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
         </div>
     </section>
 
-    <!-- ORDER FORM + BEAUTIFUL SUCCESS MESSAGE -->
+    <!-- ==================== ORDER FORM WITH reCAPTCHA v2 ==================== -->
     <section id="order" class="py-24 bg-gradient-to-br from-emerald-700 to-teal-800 text-white">
         <div class="max-w-4xl mx-auto px-6">
             <div class="text-center mb-12">
@@ -355,10 +363,10 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
             <?php endif; ?>
 
             <?php if ($error): ?>
-                <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?php echo $error; ?></div>
+                <div class="bg-red-600 text-white p-6 rounded-3xl text-center mb-8"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
+            <form id="order-form" method="POST" action="submit.php" class="grid md:grid-cols-2 gap-8">
                 <div>
                     <label class="block text-sm mb-2">Ditt navn</label>
                     <input type="text" name="name" required class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60">
@@ -371,8 +379,13 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
                     <label class="block text-sm mb-2">Adresse i Vilnius og ekstra ønsker (antall rom, type rengjøring)</label>
                     <textarea name="message" rows="5" class="w-full px-6 py-5 rounded-3xl bg-white/10 border border-white/30 focus:border-white outline-none text-white placeholder-white/60"></textarea>
                 </div>
+
+                <!-- reCAPTCHA v2 -->
+                <?php renderRecaptcha(); ?>
+
                 <div class="md:col-span-2 text-center">
-                    <button type="submit" class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
+                    <button type="submit" 
+                            class="bg-white text-emerald-700 hover:bg-emerald-100 font-bold text-xl px-16 py-7 rounded-3xl inline-flex items-center gap-4 transition shadow-2xl">
                         <i class="fa-solid fa-paper-plane"></i> SEND FORESPOERSEL
                     </button>
                 </div>
@@ -458,6 +471,20 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.relative')) document.getElementById('langDropdown').classList.add('hidden');
         });
+    </script>
+
+<script src="/chat-widget.js" defer></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <!-- JavaScript захист (не дозволяє відправити без галочки) -->
+    <script>
+    document.getElementById('order-form').addEventListener('submit', function(e) {
+        const response = document.querySelector('.g-recaptcha-response');
+        if (!response || response.value.trim() === '') {
+            e.preventDefault();
+            alert('Vennligst bekreft at du ikke er en robot (merk av "Jeg er ikke en robot").');
+        }
+    });
     </script>
 </body>
 </html>
