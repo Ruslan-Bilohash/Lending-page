@@ -1,7 +1,7 @@
 <?php
 // ========================================================
 // Ukrbud.lt - index.php (Полная мощная версия 2026)
-// Максимальный SEO + лучший калькулятор + красивые письма
+// Максимальный SEO + лучший калькулятор + красивые письма + защита reCAPTCHA v2
 // ========================================================
 session_start();
 
@@ -9,20 +9,27 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Переменные для формы заказа
+// Подключаем reCAPTCHA v2
+require_once 'recaptcha.php';
+
 $success = false;
 $error = '';
 
 // ========================================================
-// ОБРАБОТКА ФОРМЫ ЗАКАЗА — с красивыми письмами
+// ОБРАБОТКА ФОРМЫ ЗАКАЗА — с reCAPTCHA v2
 // ========================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
+    
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = 'Ошибка безопасности. Обновите страницу.';
-    } else {
-        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES));
-        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES));
-        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES));
+    } 
+    elseif (!isset($_POST['g-recaptcha-response']) || !verifyRecaptcha($_POST['g-recaptcha-response'])) {
+        $error = 'Не удалось подтвердить, что вы не робот. Поставьте галочку «Я не робот».';
+    } 
+    else {
+        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES | ENT_HTML5));
 
         if (empty($name) || empty($phone)) {
             $error = 'Имя и телефон обязательны!';
@@ -33,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
 
             // ==================== ПИСЬМО КЛИЕНТУ (красивое HTML) ====================
             $client_subject = "✅ Заявка №$order_id принята | Ukrbud.lt";
-
             $client_message = '
             <!DOCTYPE html>
             <html>
@@ -56,28 +62,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
                         <h1 style="margin:0; font-size:32px;">Заявка успешно принята!</h1>
                         <p style="margin:15px 0 0; font-size:20px;">Номер заявки: <strong>' . $order_id . '</strong></p>
                     </div>
-                    
                     <div class="content">
                         <p>Здравствуйте, <strong>' . $name . '</strong>!</p>
                         <p>Благодарим вас за доверие к <strong>Ukrbud.lt</strong> — профессиональной клиниговой компании в Вильнюсе.</p>
-                        
                         <div class="info-box">
                             <strong>Ваша заявка №' . $order_id . ' принята и находится в обработке.</strong><br><br>
-                            Наш менеджер свяжется с вами в течение 15–60 минут для уточнения деталей и назначения времени выезда бригады.
+                            Наш менеджер свяжется с вами в течение 15–60 минут для уточнения деталей.
                         </div>
-
                         <p><strong>Данные вашей заявки:</strong></p>
                         <p>Имя: ' . $name . '<br>
                            Телефон: ' . $phone . '<br>
                            Сообщение: ' . nl2br($message) . '</p>
-
                         <p style="text-align:center;">
                             <a href="tel:+37064474842" class="button">Позвонить нам прямо сейчас →</a>
                         </p>
-
                         <p>Если у вас появились дополнительные пожелания — просто ответьте на это письмо.</p>
                     </div>
-                    
                     <div class="footer">
                         С уважением,<br>
                         <strong>Команда Ukrbud.lt</strong><br>
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
             </body>
             </html>';
 
-            // ==================== ПИСЬМО АДМИНУ (тебе) ====================
+            // ==================== ПИСЬМО АДМИНУ ====================
             $admin_subject = "Новая заявка №$order_id — Ukrbud.lt";
             $admin_body = "НОВАЯ ЗАЯВКА НА УБОРКУ\n\n";
             $admin_body .= "Номер заявки: $order_id\n";
@@ -97,47 +97,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
             $admin_body .= "Сообщение:\n$message\n\n";
             $admin_body .= "Дата: " . date('d.m.Y H:i:s') . "\n";
             $admin_body .= "IP: " . $_SERVER['REMOTE_ADDR'] . "\n";
+            $admin_body .= "reCAPTCHA v2: Пройдена успешно\n";
 
             $admin_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-
-            // Отправка писем
             $headers_client = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
 
-            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com, booking@balticclean.lt", $admin_subject, $admin_body, $admin_headers);
-            mail($email ?? "rbilohash@gmail.com", $client_subject, $client_message, $headers_client); // если email клиента будет добавлен позже
+            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $admin_subject, $admin_body, $admin_headers);
+            mail($email ?? "rbilohash@gmail.com", $client_subject, $client_message, $headers_client);
 
             $success = true;
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
     }
 }
+
 // ========================================================
-// Обработка подписки на скидку 30%
+// Обработка подписки на скидку 30% (оставлена без изменений)
 // ========================================================
-// === ОБРАБОТКА ПОДПИСКИ (обновлённая часть) ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
     $email = trim(htmlspecialchars($_POST['subscribe_email'] ?? '', ENT_QUOTES));
-    
+   
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        
+       
         if (!is_dir('subscribe')) mkdir('subscribe', 0755, true);
-        
+       
         $file = 'subscribe/emails.txt';
         $exists = false;
-        
+       
         if (file_exists($file)) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             $exists = in_array($email, $lines);
         }
-        
+       
         if (!$exists) {
             file_put_contents($file, $email . PHP_EOL, FILE_APPEND | LOCK_EX);
-            
-            // === КРАСИВОЕ HTML ПИСЬМО ===
+           
             $discount_code = "UKR30-" . strtoupper(substr(md5($email . time()), 0, 6));
-            
+           
             $subject = "🎁 Ваша скидка 30% на уборку в Вильнюсе от Ukrbud.lt";
-            
+           
             $message = '
             <!DOCTYPE html>
             <html>
@@ -149,35 +147,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                     .container { max-width: 600px; margin: 30px auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
                     .header { background: linear-gradient(135deg, #22d3ee, #0ea5e9); color: white; padding: 40px 30px; text-align: center; }
                     .content { padding: 40px 30px; line-height: 1.7; color: #333; }
-                    .discount-box { 
-                        background: #f8fafc; 
-                        border: 3px dashed #22d3ee; 
-                        border-radius: 16px; 
-                        padding: 25px; 
-                        text-align: center; 
-                        margin: 30px 0;
-                    }
-                    .code { 
-                        font-size: 32px; 
-                        font-weight: bold; 
-                        letter-spacing: 4px; 
-                        color: #0e7490; 
-                        background: white; 
-                        padding: 15px 30px; 
-                        border-radius: 12px; 
-                        display: inline-block;
-                        margin: 15px 0;
-                    }
-                    .button {
-                        display: inline-block;
-                        background: #22d3ee;
-                        color: #0f172a;
-                        padding: 16px 32px;
-                        text-decoration: none;
-                        font-weight: bold;
-                        border-radius: 9999px;
-                        margin-top: 20px;
-                    }
+                    .discount-box { background: #f8fafc; border: 3px dashed #22d3ee; border-radius: 16px; padding: 25px; text-align: center; margin: 30px 0; }
+                    .code { font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #0e7490; background: white; padding: 15px 30px; border-radius: 12px; display: inline-block; margin: 15px 0; }
+                    .button { display: inline-block; background: #22d3ee; color: #0f172a; padding: 16px 32px; text-decoration: none; font-weight: bold; border-radius: 9999px; margin-top: 20px; }
                     .footer { background:#1e2937; color:#94a3b8; padding:30px; text-align:center; font-size:14px; }
                 </style>
             </head>
@@ -187,55 +159,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                         <h1 style="margin:0; font-size:32px;">🎁 Поздравляем!</h1>
                         <p style="margin:10px 0 0; font-size:20px;">Вы получили скидку 30%</p>
                     </div>
-                    
                     <div class="content">
                         <p>Здравствуйте!</p>
-                        <p>Спасибо, что подписались на рассылку Ukrbud.lt — профессиональной клиниговой компании в Вильнюсе.</p>
-                        <p>Ваш подарок — <strong>скидка 30% на первую уборку</strong> (после ремонта, офисов или коммерческого помещения).</p>
-                        
+                        <p>Спасибо, что подписались на рассылку Ukrbud.lt.</p>
+                        <p>Ваш подарок — <strong>скидка 30% на первую уборку</strong>.</p>
                         <div class="discount-box">
                             <p style="margin:0 0 10px; font-size:18px; color:#64748b;">Ваш промокод:</p>
                             <div class="code">' . $discount_code . '</div>
                             <p style="margin:15px 0 0; color:#64748b;">Действует 30 дней</p>
                         </div>
-                        
                         <p style="text-align:center;">
                             <a href="https://ukrbud.lt/#contact" class="button">Заказать уборку со скидкой →</a>
                         </p>
-                        
-                        <p>Просто покажите этот промокод нашему менеджеру при оформлении заявки.</p>
-                        
-                        <p>С уважением,<br>
-                        <strong>Команда Ukrbud.lt</strong><br>
-                        Профессиональная уборка Вильнюс<br>
-                        +370 644 74842</p>
+                        <p>Просто покажите этот промокод нашему менеджеру.</p>
+                        <p>С уважением,<br><strong>Команда Ukrbud.lt</strong></p>
                     </div>
-                    
                     <div class="footer">
                         © 2026 Ukrbud.lt — Уборка после ремонта, офисов и коммерческих помещений в Вильнюсе<br>
-                        Если вы не хотите получать письма — просто ответьте на это письмо с текстом «Отписаться».
+                        Если не хотите получать письма — ответьте «Отписаться».
                     </div>
                 </div>
             </body>
             </html>';
 
-            // Заголовки для HTML-письма
-            $headers = "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type: text/html; charset=utf-8\r\n";
-            $headers .= "From: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
-            $headers .= "Reply-To: no-reply@ukrbud.lt\r\n";
-
-            // Отправляем красивое письмо подписчику
+            $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
             mail($email, $subject, $message, $headers);
 
-            // Уведомление тебе
             $notify_subject = "Новая подписка на скидку 30% — ukrbud.lt";
             $notify_body = "Новая подписка:\nEmail: $email\nПромокод: $discount_code\nДата: " . date('d.m.Y H:i:s') . "\nIP: " . $_SERVER['REMOTE_ADDR'];
-            $notify_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-            
-            mail("rbilohash@gmail.com, valeriapilipiuk@gmail.com, ulianasemashko@gmail.com, booking@balticclean.lt", $notify_subject, $notify_body, $notify_headers);
+            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $notify_subject, $notify_body, "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n");
         }
-        
+       
         $subscribe_success = true;
     } else {
         $subscribe_error = 'Введите корректный email адрес';
@@ -377,7 +331,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-
+<!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
         .heading-font { font-family: 'Space Grotesk', sans-serif; }
@@ -755,7 +710,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                     <input type="text" name="name" required placeholder="Ваше имя" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <input type="tel" name="phone" required placeholder="+370 644 74842" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <textarea name="message" rows="5" placeholder="Опишите задачу (уборка после ремонта квартиры, офис 150 м² и т.д.)" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none"></textarea>
-                    <button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Отправить заявку</button>
+                    <!-- reCAPTCHA v2 -->
+                    <?php renderRecaptcha(); ?>
+					<button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Отправить заявку</button>
                 </form>
             </div>
             <div class="flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
