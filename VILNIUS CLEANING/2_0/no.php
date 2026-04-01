@@ -23,7 +23,16 @@ $error = isset($_GET['error']) && $_GET['error'] == 1 ? "Feil ved sending av for
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="Ruslan Bilohash">
     <meta name="theme-color" content="#10b981">
-    <link rel="canonical" href="https://bilohash.com/no.php">
+    <link rel="canonical" href="https://meistru.lt/no.php">
+
+<!-- hreflang -->
+<link rel="alternate" hreflang="lt" href="https://meistru.lt/" />
+<link rel="alternate" hreflang="lt" href="https://meistru.lt/index.php" />
+<link rel="alternate" hreflang="ru" href="https://meistru.lt/ru.php" />
+<link rel="alternate" hreflang="uk" href="https://meistru.lt/ua.php" />
+<link rel="alternate" hreflang="en" href="https://meistru.lt/en.php" />
+<link rel="alternate" hreflang="no" href="https://meistru.lt/no.php" />
+<link rel="alternate" hreflang="x-default" href="https://meistru.lt/" />
 
     <!-- OPEN GRAPH -->
     <meta property="og:title" content="Profesjonell rengjøring i Vilnius | Leiligheter, kontorer og etter renovering">
