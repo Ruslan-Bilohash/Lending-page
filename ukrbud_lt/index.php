@@ -1,24 +1,36 @@
 <?php
+// ========================================================
+// Ukrbud.lt - index.php (Полная мощная версия 2026)
+// Максимальный SEO + лучший калькулятор + красивые письма + защита от спама reCAPTCHA v2
+// Улучшено: безопасность, адаптивность, чистый код
+// ========================================================
 session_start();
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Kintamieji užsakymo formai
+// Подключаем reCAPTCHA защиту
+require_once 'recaptcha.php';
+
 $success = false;
 $error = '';
 
 // ========================================================
-// UŽSAKYMO FORMOS APDOROJIMAS — su gražiais laiškais
+// ОБРАБОТКА ФОРМЫ ЗАКАЗА — с reCAPTCHA и CSRF
 // ========================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
+    
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $error = 'Saugumo klaida. Atnaujinkite puslapį.';
-    } else {
-        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES));
-        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES));
-        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES));
+    } 
+    elseif (!isset($_POST['g-recaptcha-response']) || !verifyRecaptcha($_POST['g-recaptcha-response'])) {
+        $error = 'Nepavyko patvirtinti, kad jūs ne robotas. Pažymėkite „Aš nesu robotas“.';
+    } 
+    else {
+        $name    = trim(htmlspecialchars($_POST['name'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $phone   = trim(htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES | ENT_HTML5));
+        $message = trim(htmlspecialchars($_POST['message'] ?? '', ENT_QUOTES | ENT_HTML5));
 
         if (empty($name) || empty($phone)) {
             $error = 'Vardas ir telefono numeris yra privalomi!';
@@ -27,9 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
         } else {
             $order_id = "UKR-" . date("YmdHis");
 
-            // ==================== LAIŠKAS KLIENTUI (gražus HTML) ====================
+            // ==================== КРАСИВОЕ ПИСЬМО КЛИЕНТУ ====================
             $client_subject = "✅ Užsakymas Nr. $order_id priimtas | Ukrbud.lt";
-
             $client_message = '
             <!DOCTYPE html>
             <html>
@@ -52,39 +63,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
                         <h1 style="margin:0; font-size:32px;">Užsakymas sėkmingai priimtas!</h1>
                         <p style="margin:15px 0 0; font-size:20px;">Užsakymo numeris: <strong>' . $order_id . '</strong></p>
                     </div>
-                   
                     <div class="content">
                         <p>Sveiki, <strong>' . $name . '</strong>!</p>
                         <p>Dėkojame už pasitikėjimą <strong>Ukrbud.lt</strong> — profesionalia valymo įmone Vilniuje.</p>
-                       
                         <div class="info-box">
                             <strong>Jūsų užsakymas Nr.' . $order_id . ' priimtas ir šiuo metu apdorojamas.</strong><br><br>
-                            Mūsų vadybininkas susisieks su jumis per 15–60 minučių, kad patikslintų detales ir paskirtų patogų brigados atvykimo laiką.
+                            Mūsų vadybininkas susisieks su jumis per 15–60 minučių.
                         </div>
-
-                        <p><strong>Jūsų užsakymo duomenys:</strong></p>
-                        <p>Vardas: ' . $name . '<br>
+                        <p><strong>Jūsų duomenys:</strong><br>
+                           Vardas: ' . $name . '<br>
                            Telefonas: ' . $phone . '<br>
                            Pranešimas: ' . nl2br($message) . '</p>
-
                         <p style="text-align:center;">
-                            <a href="tel:+37064474842" class="button">Skambinkite mums dabar →</a>
+                            <a href="tel:+37064474842" class="button">Skambinkite dabar →</a>
                         </p>
-
-                        <p>Jei atsirado papildomų pageidavimų — tiesiog atsakykite į šį laišką.</p>
                     </div>
-                   
                     <div class="footer">
                         Su pagarba,<br>
                         <strong>Ukrbud.lt komanda</strong><br>
-                        Profesionalus valymas po remonto • Biurų valymas • Komercinių patalpų valymas<br>
-                        Vilnius • +370 644 74842
+                        Profesionalus valymas Vilniuje • +370 644 74842
                     </div>
                 </div>
             </body>
             </html>';
 
-            // ==================== LAIŠKAS ADMINISTRATORIUI (tau) ====================
+            // ==================== ПИСЬМО АДМИНУ ====================
             $admin_subject = "Naujas užsakymas Nr.$order_id — Ukrbud.lt";
             $admin_body = "NAUJAS VALYMO UŽSAKYMAS\n\n";
             $admin_body .= "Užsakymo numeris: $order_id\n";
@@ -93,46 +96,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
             $admin_body .= "Pranešimas:\n$message\n\n";
             $admin_body .= "Data: " . date('d.m.Y H:i:s') . "\n";
             $admin_body .= "IP: " . $_SERVER['REMOTE_ADDR'] . "\n";
+            $admin_body .= "reCAPTCHA: Patvirtinta\n";
 
             $admin_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-
-            // Siunčiame laiškus
             $headers_client = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
 
+            // Отправка
             mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $admin_subject, $admin_body, $admin_headers);
-            mail($email ?? "rbilohash@gmail.com", $client_subject, $client_message, $headers_client);
+            mail("rbilohash@gmail.com", $client_subject, $client_message, $headers_client);
 
             $success = true;
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // обновляем токен
         }
     }
 }
 
 // ========================================================
-// Prenumeratos su 30% nuolaida apdorojimas
+// ПРЕНУМЕРАЦИЯ 30% СКИДКА
 // ========================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
     $email = trim(htmlspecialchars($_POST['subscribe_email'] ?? '', ENT_QUOTES));
-   
+
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-       
         if (!is_dir('subscribe')) mkdir('subscribe', 0755, true);
-       
+      
         $file = 'subscribe/emails.txt';
         $exists = false;
-       
+      
         if (file_exists($file)) {
             $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             $exists = in_array($email, $lines);
         }
-       
+      
         if (!$exists) {
             file_put_contents($file, $email . PHP_EOL, FILE_APPEND | LOCK_EX);
-           
+          
             $discount_code = "UKR30-" . strtoupper(substr(md5($email . time()), 0, 6));
-           
+          
             $subject = "🎁 Jūsų 30% nuolaida valymui Vilniuje iš Ukrbud.lt";
-           
+          
             $message = '
             <!DOCTYPE html>
             <html>
@@ -156,52 +158,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                         <h1 style="margin:0; font-size:32px;">🎁 Sveikiname!</h1>
                         <p style="margin:10px 0 0; font-size:20px;">Jūs gavote 30% nuolaidą</p>
                     </div>
-                   
                     <div class="content">
                         <p>Sveiki!</p>
-                        <p>Dėkojame, kad prenumeravote Ukrbud.lt naujienlaiškį — profesionalią valymo įmonę Vilniuje.</p>
-                        <p>Jūsų dovana — <strong>30% nuolaida pirmam valymui</strong> (po remonto, biurų ar komercinių patalpų).</p>
-                       
+                        <p>Dėkojame, kad prenumeravote Ukrbud.lt.</p>
+                        <p>Jūsų dovana — <strong>30% nuolaida pirmam valymui</strong>.</p>
                         <div class="discount-box">
                             <p style="margin:0 0 10px; font-size:18px; color:#64748b;">Jūsų nuolaidos kodas:</p>
                             <div class="code">' . $discount_code . '</div>
                             <p style="margin:15px 0 0; color:#64748b;">Galioja 30 dienas</p>
                         </div>
-                       
                         <p style="text-align:center;">
                             <a href="https://ukrbud.lt/#contact" class="button">Užsisakyti valymą su nuolaida →</a>
                         </p>
-                       
-                        <p>Paprasčiausiai parodykite šį kodą mūsų vadybininkui užsakymo metu.</p>
-                       
-                        <p>Su pagarba,<br>
-                        <strong>Ukrbud.lt komanda</strong><br>
-                        Profesionalus valymas Vilniuje<br>
-                        +370 644 74842</p>
+                        <p>Su pagarba,<br><strong>Ukrbud.lt komanda</strong></p>
                     </div>
-                   
                     <div class="footer">
-                        © 2026 Ukrbud.lt — Valymas po remonto, biurų ir komercinių patalpų Vilniuje<br>
-                        Jei nebenorite gauti laiškų — tiesiog atsakykite į šį laišką su tekstu „Atsisakyti“.
+                        © 2026 Ukrbud.lt — Valymas Vilniuje
                     </div>
                 </div>
             </body>
             </html>';
 
-            $headers = "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type: text/html; charset=utf-8\r\n";
-            $headers .= "From: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
-            $headers .= "Reply-To: no-reply@ukrbud.lt\r\n";
-
+            $headers = "MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nFrom: Ukrbud.lt <no-reply@ukrbud.lt>\r\n";
             mail($email, $subject, $message, $headers);
 
             $notify_subject = "Nauja prenumerata su 30% nuolaida — ukrbud.lt";
             $notify_body = "Nauja prenumerata:\nEl. paštas: $email\nNuolaidos kodas: $discount_code\nData: " . date('d.m.Y H:i:s') . "\nIP: " . $_SERVER['REMOTE_ADDR'];
-            $notify_headers = "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n";
-           
-            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $notify_subject, $notify_body, $notify_headers);
+            mail("rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com,booking@balticclean.lt", $notify_subject, $notify_body, "From: no-reply@ukrbud.lt\r\nContent-Type: text/plain; charset=utf-8\r\n");
         }
-       
         $subscribe_success = true;
     } else {
         $subscribe_error = 'Įveskite teisingą el. pašto adresą';
@@ -712,7 +696,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_email'])) {
                     <input type="text" name="name" required placeholder="Jūsų vardas" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <input type="tel" name="phone" required placeholder="+370 644 74842" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none">
                     <textarea name="message" rows="5" placeholder="Aprašykite užduotį (valymas po remonto buto, biuras 150 m² ir t.t.)" class="w-full bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-white placeholder-white/60 focus:outline-none"></textarea>
-                    <button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Siųsti užsakymą</button>
+                    <!-- reCAPTCHA -->
+                    <?php renderRecaptcha(); ?>
+					<button type="submit" name="submit_order" class="w-full py-7 bg-white text-black font-bold text-2xl rounded-3xl hover:bg-cyan-300">Siųsti užsakymą</button>
                 </form>
             </div>
             <div class="flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
@@ -1014,5 +1000,6 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
     }
 </style>
 <?php include 'gdpr-consent.php'; ?>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>
