@@ -1,4 +1,7 @@
 <?php
+// Підключаємо reCAPTCHA v2
+require_once __DIR__ . '/recaptcha.php';
+
 // ====================== kalkuliatorius.php ======================
 // ГОЛОВНА МОВА — ЛИТОВСЬКА
 // Потужне SEO + Open Graph + JSON-LD + всі кнопки 100%
@@ -277,74 +280,85 @@ $tr = [
 ];
 
 $t = $tr[$lang] ?? $tr['lt'];
-// === ОБРОБКА ФОРМИ ===
+// === ОБРОБКА ФОРМИ З reCAPTCHA + CSRF + КРАСИВИЙ EMAIL ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // 1. Перевірка reCAPTCHA v2
+    if (!isset($_POST['g-recaptcha-response']) || !verifyRecaptcha($_POST['g-recaptcha-response'])) {
+        header("Location: kalkuliatorius.php?error=1");
+        exit;
+    }
+
+    // 2. Базова валідація
     $name  = strip_tags(trim($_POST['name'] ?? ''));
     $phone = strip_tags(trim($_POST['phone'] ?? ''));
     $suma  = (int)($_POST['suma'] ?? 0);
 
-    if ($name && $phone && $suma > 0) {
-
-        $html = '
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body { font-family: Arial, Helvetica, sans-serif; background: #f9fafb; margin: 0; padding: 20px; }
-                .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-                .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px 20px; text-align: center; }
-                .header h1 { margin: 0; font-size: 28px; }
-                .content { padding: 30px 25px; }
-                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-                th { background: #f8fafc; font-weight: 600; color: #374151; width: 40%; }
-                .highlight { background: #ecfdf5; font-weight: bold; color: #065f46; font-size: 1.1em; }
-                .footer { background: #f8fafc; padding: 20px; text-align: center; font-size: 14px; color: #6b7280; }
-                .site-link { color: #10b981; text-decoration: none; font-weight: 600; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🧹 Нове замовлення зі знижкою 30%!</h1>
-                    <p style="margin: 8px 0 0; opacity: 0.95;">Meistru Valymas Vilnius</p>
-                </div>
-                
-                <div class="content">
-                    <table>
-                        <tr><th>Ім’я клієнта</th><td>' . htmlspecialchars($name) . '</td></tr>
-                        <tr><th>Телефон</th><td>' . htmlspecialchars($phone) . '</td></tr>
-                        <tr><th class="highlight">Сума зі знижкою</th><td class="highlight">' . $suma . ' €</td></tr>
-                        <tr><th>Дата та час</th><td>' . date('d.m.Y H:i') . '</td></tr>
-                        <tr><th>Джерело замовлення</th><td><strong>https://meistru.lt</strong></td></tr>
-                    </table>
-                    
-                    <p style="text-align: center; margin-top: 30px; font-size: 15px;">
-                        Замовлення надійшло з сайту <a href="https://meistru.lt" class="site-link" target="_blank">https://meistru.lt</a>
-                    </p>
-                </div>
-                
-                <div class="footer">
-                    Meistru Valymas © 2026 • Всі права захищені
-                </div>
-            </div>
-        </body>
-        </html>';
-
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=utf-8\r\n";
-        $headers .= "From: no-reply@meistru.lt\r\n";
-        $headers .= "Reply-To: no-reply@meistru.lt\r\n";
-
-        mail(
-            "rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com",
-            "Замовлення $suma € - Meistru Valymas",
-            $html,
-            $headers
-        );
+    if (empty($name) || empty($phone) || $suma <= 0) {
+        header("Location: kalkuliatorius.php?error=1");
+        exit;
     }
 
+    // === КРАСИВИЙ HTML EMAIL ===
+    $html = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: Arial, Helvetica, sans-serif; background: #f9fafb; margin:0; padding:30px; }
+            .container { max-width: 620px; margin: 0 auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 40px 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 28px; }
+            .content { padding: 40px 35px; line-height: 1.7; color: #1f2937; }
+            table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+            th, td { padding: 16px 18px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+            th { background: #f8fafc; font-weight: 600; color: #374151; width: 42%; }
+            .highlight { background: #ecfdf5; font-weight: bold; color: #065f46; font-size: 1.15em; }
+            .footer { background: #f8fafc; padding: 25px; text-align: center; font-size: 14px; color: #6b7280; }
+            .site-link { color: #10b981; text-decoration: none; font-weight: 600; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🧹 Нове замовлення зі знижкою 30%!</h1>
+                <p style="margin:10px 0 0; opacity:0.95;">Meistru Valymas Vilnius</p>
+            </div>
+            <div class="content">
+                <table>
+                    <tr><th>Ім’я клієнта</th><td>' . htmlspecialchars($name) . '</td></tr>
+                    <tr><th>Телефон</th><td>' . htmlspecialchars($phone) . '</td></tr>
+                    <tr><th class="highlight">Сума зі знижкою</th><td class="highlight">' . $suma . ' €</td></tr>
+                    <tr><th>Дата та час</th><td>' . date('d.m.Y H:i:s') . '</td></tr>
+                    <tr><th>IP адреса</th><td>' . $_SERVER['REMOTE_ADDR'] . '</td></tr>
+                    <tr><th>Джерело</th><td><strong>https://meistru.lt/kalkuliatorius.php</strong></td></tr>
+                </table>
+                <p style="text-align:center; margin-top:35px; font-size:15px;">
+                    Замовлення надійшло з калькулятора на сайті 
+                    <a href="https://meistru.lt" class="site-link" target="_blank">meistru.lt</a>
+                </p>
+            </div>
+            <div class="footer">
+                Meistru Valymas Vilnius © 2026 • Професійне прибирання з гарантією якості
+            </div>
+        </div>
+    </body>
+    </html>';
+
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=utf-8\r\n";
+    $headers .= "From: no-reply@meistru.lt\r\n";
+    $headers .= "Reply-To: no-reply@meistru.lt\r\n";
+
+    mail(
+        "rbilohash@gmail.com,valeriapilipiuk@gmail.com,ulianasemashko@gmail.com",
+        "Замовлення $suma € — Калькулятор Meistru Valymas",
+        $html,
+        $headers
+    );
+
+    // Перенаправлення з успіхом
     header("Location: kalkuliatorius.php?success=1");
     exit;
 }
@@ -364,7 +378,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://meistru.lt/kalkuliatorius.php">
     <meta property="og:image" content="https://picsum.photos/id/1015/1200/630">
-
+<!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
@@ -416,7 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </section>
 
-<!-- КАЛЬКУЛЯТОР -->
+<!-- ==================== КАЛЬКУЛЯТОР З reCAPTCHA v2 ==================== -->
 <section class="py-24 bg-white">
     <div class="max-w-4xl mx-auto px-6">
         <?php if (isset($_GET['success'])): ?>
@@ -425,7 +440,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h3 class="text-3xl font-bold"><?php echo $t['success']; ?></h3>
             </div>
         <?php endif; ?>
-        <form method="POST" class="bg-white rounded-3xl p-12 md:p-16 shadow-2xl">
+
+        <form id="calc-form" method="POST" class="bg-white rounded-3xl p-12 md:p-16 shadow-2xl">
             <div class="grid md:grid-cols-2 gap-8">
                 <div>
                     <label class="block text-sm font-semibold mb-3"><?php echo $t['type']; ?></label>
@@ -441,6 +457,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="number" id="plotas" value="65" min="20" onkeyup="calculate()" class="w-full px-6 py-6 rounded-3xl border-2 text-3xl text-center bg-white">
                 </div>
             </div>
+
             <div class="grid md:grid-cols-2 gap-8 mt-8">
                 <div>
                     <label class="block text-sm font-semibold mb-3"><?php echo $t['name']; ?></label>
@@ -451,16 +468,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="tel" name="phone" required class="w-full px-6 py-6 rounded-3xl border-2 text-xl">
                 </div>
             </div>
+
             <div id="rezultatas" class="mt-14 text-center min-h-[170px]"></div>
             <input type="hidden" name="suma" id="hiddenSum">
+
+            <!-- reCAPTCHA v2 -->
+            <div class="my-10 flex justify-center">
+                <?php renderRecaptcha(); ?>
+            </div>
+
             <button type="submit" id="btnOrder" class="hidden w-full mt-10 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-3xl font-bold py-8 rounded-3xl btn-hover">
                 <?php echo $t['btn']; ?>
             </button>
         </form>
+
         <div class="text-center mt-8 text-gray-500"><?php echo $t['note']; ?></div>
     </div>
 </section>
-
 <!-- Переваги -->
 <section class="py-20 bg-emerald-50">
     <div class="max-w-7xl mx-auto px-6">
@@ -604,6 +628,17 @@ function calculate() {
 }
 
 window.addEventListener('load', calculate);
+</script>
+
+<script src="/chat-widget.js" defer></script>
+<script>
+document.getElementById('calc-form').addEventListener('submit', function(e) {
+    const response = document.querySelector('.g-recaptcha-response');
+    if (!response || response.value.trim() === '') {
+        e.preventDefault();
+        alert('Будь ласка, підтвердіть, що ви не робот (поставте галочку)');
+    }
+});
 </script>
 </body>
 </html>
